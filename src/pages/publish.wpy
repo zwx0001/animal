@@ -1,0 +1,242 @@
+<template>
+    <view class="wrap">
+        <view class="msg">
+            <text>为了Ta的安全,请实际考察后再送养哦~</text>
+            <view>
+                <text>1.填写基本信息</text>
+                <text>2.上传照片等详细信息</text>
+            </view>
+        </view>
+        <view class="message style">
+            <view class="tit">宠物信息</view>
+            <view class="ul">
+                <view class="li">
+                    <text>它的名字</text>
+                    <view>
+                        <input type="text" value="天天" @input="nameIpt">
+                    </view>
+                </view>
+                <view class="li ck">
+                    <text>类别</text>
+                    <view>
+                        <text class="{{idx==='1'?'active':''}}" @tap="handleclick('狗狗',1)">狗狗</text>
+                        <text class="{{idx==='2'?'active':''}}" @tap="handleclick('猫咪',2)">猫咪</text>
+                        <text class="{{idx==='3'?'active':''}}" @tap="handleclick('其他',3)">其他</text>
+                    </view>
+                </view>
+                <view class="li">
+                    <text>品种</text>
+                    <view>
+                        <input type="text" placeholder="请选择品种" value="{{val}}">
+                    </view>
+                </view>
+                <view class="li">
+                    <text>年龄</text>
+                    <view class="section">
+                        <picker bindchange="bindPickerChange" value="{{index}}" range="{{array}}">
+                            <view class="picker">{{array[index]}}</view>
+                        </picker>
+                    </view>
+                </view>
+                <view class="li ck">
+                    <text>类别</text>
+                    <view>
+                        <text class="{{idx2==='1'?'active':''}}" @tap="sexClick('未知',1)">未知</text>
+                        <text class="{{idx2==='2'?'active':''}}" @tap="sexClick('男孩',2)">男孩</text>
+                        <text class="{{idx2==='3'?'active':''}}" @tap="sexClick('女孩',3)">女孩</text>
+                    </view>
+                </view>
+            </view>
+        </view>
+        <view class="message2 style">
+            <view class="tit">联系方式</view>
+            <view class="ul">
+                <view class="li">
+                    <text>所在地</text>
+                    <view>
+                        <input type="text" value="北京" @input="localIpt">
+                    </view>
+                </view>
+                <view class="li ck">
+                    <text>微信号</text>
+                    <view>
+                        <input type="text" placeholder="选填">
+                    </view>
+                </view>
+                <view class="li">
+                    <text>手机号</text>
+                    <view>
+                        <input type="text" placeholder="必填">
+                    </view>
+                </view>
+            </view>
+        </view>
+        <button @tap="goHome">下一步</button>
+    </view>
+</template>
+<script>
+import wepy from 'wepy';
+import { connect } from 'wepy-redux';
+import { getdata } from '../store/actions/counter';
+@connect(
+  {},
+  {
+    getdata
+  }
+)
+export default class Publish extends wepy.page {
+  config = {
+    navigationBarTitleText: '发布送养宠物信息'
+  };
+  data = {
+    array: [
+      '7-12个月',
+      '1岁',
+      '2岁',
+      '3岁',
+      '4岁',
+      '5岁',
+      '6岁',
+      '7岁',
+      '8岁',
+      '9岁',
+      '10岁'
+    ],
+    index: 1,
+    idx: '1',
+    idx2: '2',
+    kind: '狗狗',
+    val: '哈士奇',
+    sex: '男孩',
+    local: '北京',
+    name: '天天',
+    age: '2岁'
+  };
+  methods = {
+    bindPickerChange(e) {
+      this.index = e.detail.value;
+      this.age = this.array[this.index];
+    },
+    handleclick(kind, idx) {
+      wx.navigateTo({
+        url: '../pages/kind?kind=' + kind
+      });
+      this.idx = idx;
+    },
+    localIpt(e) {
+      this.local = e.detail.value;
+    },
+    nameIpt(e) {
+      this.name = e.detail.value;
+    },
+    sexClick(val, idx) {
+      this.idx2 = idx;
+      this.sex = val;
+    },
+    goHome() {
+      wx.switchTab({
+        url: './index'
+      });
+      this.methods.getdata(
+        this.name,
+        this.kind,
+        this.val,
+        this.age,
+        this.sex,
+        this.local
+      );
+    }
+  };
+  onShow() {
+    let { kind, val } = wepy.$instance.globalData.msg;
+    this.kind = kind;
+    this.val = val;
+  }
+}
+</script>
+<style lang="less" scoped>
+.wrap {
+  background: #eee;
+}
+.msg {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 180rpx;
+  justify-content: space-around;
+  > text {
+    display: inline-block;
+    margin: 0 auto;
+    padding: 10rpx 25rpx;
+    color: #fff;
+    background: #fe4e4e;
+    border-radius: 50rpx;
+    margin-top: 20rpx;
+    font-size: 30rpx;
+  }
+  > view {
+    font-size: 35rpx;
+    color: #fe4e4e;
+    text {
+      margin-right: 50rpx;
+    }
+  }
+}
+.message2 {
+  margin-top: 20rpx;
+}
+.style {
+  padding: 20rpx;
+  background: #fff;
+
+  .tit {
+    border-left: solid 5rpx #fe4e4e;
+    font-size: 35rpx;
+    font-weight: bold;
+    padding: 0 20rpx;
+  }
+  .li {
+    display: flex;
+    font-size: 35rpx;
+    line-height: 100rpx;
+    border-bottom: solid 1rpx #ccc;
+    input {
+      height: 100%;
+      padding: 0 10rpx;
+      box-sizing: border-box;
+    }
+    > text {
+      display: inline-block;
+      width: 180rpx;
+    }
+    > view {
+      flex: 1;
+    }
+  }
+  .ck {
+    view {
+      text {
+        margin-right: 30rpx;
+        padding: 5rpx 20rpx;
+        border-radius: 40rpx;
+        border: solid 1rpx #000;
+      }
+      text.active {
+        background: #fe4e4e;
+        color: #fff;
+        border: none;
+      }
+    }
+  }
+}
+button {
+  border: none;
+  color: #fff;
+  height: 100rpx;
+  font-size: 35rpx;
+  background: #fe4e4e;
+  margin-top: 50rpx;
+}
+</style>
+
+

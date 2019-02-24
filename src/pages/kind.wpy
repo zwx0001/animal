@@ -1,0 +1,91 @@
+<template>
+    <view class="wrap">
+        <view style="background:#eee">热门</view>
+        <repeat for="{{list[kind]}}" key="index" index="index" item="item">
+            <view @tap="handleClick({{kind}},{{item}})">{{item}}</view>
+        </repeat>
+    </view>
+</template>
+<script>
+import wepy from 'wepy';
+export default class Kind extends wepy.page {
+  config = {
+    navigationBarTitleText: '品种选择'
+  };
+  data = {
+    list: {
+      猫咪: [
+        '中华田园猫',
+        '中国狸花猫',
+        '英国短毛猫',
+        '美国短毛猫',
+        '布偶猫',
+        '宅罗猫',
+        '斯芬克斯猫',
+        '波斯猫',
+        '金吉拉猫'
+      ],
+      狗狗: [
+        '中华田园犬',
+        '串串',
+        '泰迪',
+        '哈士奇',
+        '金毛',
+        '阿拉斯加',
+        '萨摩耶',
+        '比熊',
+        '柯基',
+        '柴犬',
+        '吉娃娃',
+        '博美',
+        '德功',
+        '八哥',
+        '法国斗牛',
+        '雪纳瑞',
+        '金毛犬',
+        '狮子狗',
+        '狐狸狗'
+      ],
+      其他: [
+        '马驹',
+        '野马',
+        '牛',
+        '水牛',
+        '小母牛',
+        '猪仔',
+        '牧羊',
+        '蟑螂',
+        '蟋蟀',
+        '木马',
+        '鲨鱼',
+        '章鱼'
+      ]
+    },
+    kind: '狗狗'
+  };
+  onLoad(options) {
+    this.kind = options.kind;
+  }
+  methods = {
+    handleClick(kind, val) {
+      let app = wepy.$instance.globalData.msg;
+      app.kind = kind;
+      app.val = val;
+      wx.switchTab({
+        url: '../pages/publish'
+      });
+    }
+  };
+}
+</script>
+<style lang="less" scoped>
+.wrap {
+  view {
+    padding: 0 20rpx;
+    line-height: 100rpx;
+    border-bottom: solid 1rpx #ccc;
+  }
+}
+</style>
+
+

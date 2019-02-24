@@ -1,0 +1,237 @@
+<template>
+  <view class="wrap">
+    <swiper
+      indicator-dots="true"
+      autoplay="true"
+      interval="{{5000}}"
+      duration="{{5000}}"
+      circular="true"
+    >
+      <block wx:for="{{imgUrls}}" wx:key="index">
+        <swiper-item>
+          <image src="{{item.image}}" class="slide-image" width="355" height="150"/>
+        </swiper-item>
+      </block>
+    </swiper>
+    <view class="img">
+      <image src="../images/1_r1_c1.jpg" mode="scaleToFill" lazy-load="false"/>
+      <image src="../images/1_r1_c2.jpg" mode="scaleToFill" lazy-load="false"/>
+    </view>
+    <view class="content">
+      <view style="font-size:35rpx;">北京市</view>
+      <view class="classify">
+        <repeat for="{{classify}}" key="index" index="index" item="item">
+          <text class="{{idx===index?'active':''}}" @tap="handleClick({{index}},{{item}})">{{item}}</text>
+        </repeat>
+      </view>
+      <view class="con">
+        <repeat for="{{array}}" key="index" index="index" item="item">
+          <view class="con-item">
+            <image src="http://img5.imgtn.bdimg.com/it/u=3210760059,3618849186&fm=26&gp=0.jpg" mode="scaleToFill"
+            lazy-load="false"/>
+            <view class="con-item-right">
+              <view>
+                {{item.name}}
+                <text class="{{item.sex==='男孩'?'b':'g'}}">{{item.sex}}</text>
+              </view>
+              <view>
+                <text>{{item.age}}</text>
+                <text>{{item.val}}</text>
+              </view>
+              <view>
+                <text style="background:#A5A1D4">已免疫</text>
+                <text style="background:#BACE90">已免疫</text>
+                <text style="background:#D6AEB4">已免疫</text>
+              </view>
+              <view>
+                <text>{{item.local}}</text>
+                <text>北京市</text>
+                <text>朝阳区</text>
+              </view>
+            </view>
+          </view>
+        </repeat>
+      </view>
+    </view>
+  </view>
+</template>
+<script>
+import wepy from 'wepy';
+import { connect } from 'wepy-redux';
+@connect(
+  {
+    arr: function(state) {
+      return state.counter.arr;
+    }
+  },
+  {}
+)
+export default class Index extends wepy.page {
+  config = {
+    navigationBarTitleText: '宠安家领养平台'
+  };
+  data = {
+    imgUrls: [],
+    classify: ['全部', '狗狗', '猫猫', '其他'],
+    idx: 0,
+    array: []
+  };
+  methods = {
+    handleClick(idx, i) {
+      this.idx = idx;
+      if (i === '全部') {
+        this.array = [...this.arr];
+      } else if (i === '狗狗') {
+        this.array = [
+          ...this.arr.filter(item => {
+            return item.kind === '狗狗';
+          })
+        ];
+      } else if (i === '猫猫') {
+        this.array = [
+          ...this.arr.filter(item => {
+            return item.kind === '猫咪';
+          })
+        ];
+      } else {
+        this.array = [
+          ...this.arr.filter(item => {
+            return item.kind !== '狗狗' && item.kind !== '猫咪';
+          })
+        ];
+      }
+    }
+  };
+  onLoad() {
+    let that = this;
+    wx.request({
+      url:
+        'https://ad.maoyan.com/api/position/detail?ci=1&userId=&positionIds=1034&uuid=1A6E888B4A4B29B16FBA1299108DBE9C7E31B09C7A236E317C09C09B2F426730&channelId=70001&phoneModel=EVA-AL10&os=android&clientType=wechat_small_program&screenHeight=1791&screenWidth=1080',
+      method: 'GET',
+      header: {
+        'content-type': 'application/json' // 默认值
+      },
+      success(res) {
+        that.imgUrls = res.data.data[0].config;
+        that.$apply();
+      }
+    });
+  }
+  onShow() {
+    if (this.classify[this.idx] === '狗狗') {
+      this.array = [
+        ...this.arr.filter(item => {
+          return item.kind === '狗狗';
+        })
+      ];
+    } else if (this.classify[this.idx] === '猫猫') {
+      this.array = [
+        ...this.arr.filter(item => {
+          return item.kind === '猫咪';
+        })
+      ];
+    } else if (this.classify[this.idx] === '其他') {
+      this.array = [
+        ...this.arr.filter(item => {
+          return item.kind !== '狗狗' && item.kind !== '猫咪';
+        })
+      ];
+    } else {
+      this.array = [...this.arr];
+    }
+  }
+}
+</script>
+<style lang="less" scoped>
+swiper {
+  height: 250rpx;
+  image {
+    width: 100%;
+    height: 100%;
+  }
+}
+.img {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 20rpx;
+  image {
+    width: 49%;
+    height: 180rpx;
+  }
+}
+.content {
+  padding: 20rpx;
+}
+.classify {
+  font-size: 35rpx;
+  display: flex;
+  margin-top: 20rpx;
+  text {
+    padding: 10rpx 40rpx;
+    border-radius: 40rpx;
+    background: #ccc;
+    margin-right: 30rpx;
+  }
+  .active {
+    background: #fe4e4e;
+    color: #fff;
+  }
+}
+.con {
+  margin-top: 20rpx;
+}
+.con-item {
+  display: flex;
+  padding: 40rpx 0;
+  border-bottom: gray 1rpx dashed;
+  image {
+    width: 220rpx;
+    height: 220rpx;
+  }
+  .con-item-right {
+    margin-left: 40rpx;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    view:nth-child(1) {
+      text {
+        font-size: 35rpx;
+
+        padding: 0 30rpx;
+      }
+      text.g {
+        color: #fe4e4e;
+      }
+      text.b {
+        color: #12126c;
+      }
+    }
+    view:nth-child(2) {
+      font-size: 30rpx;
+      text {
+        margin-right: 40rpx;
+      }
+    }
+    view:nth-child(3) {
+      text {
+        padding: 5rpx 20rpx;
+        background: #ccc;
+        border-radius: 30rpx;
+        margin-right: 30rpx;
+        color: #fff;
+        font-size: 32rpx;
+      }
+    }
+    view:nth-child(4) {
+      font-size: 32rpx;
+      color: gray;
+      text {
+        margin-right: 30rpx;
+      }
+    }
+  }
+}
+</style>
+
+
